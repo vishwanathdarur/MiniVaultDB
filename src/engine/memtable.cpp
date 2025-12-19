@@ -3,10 +3,13 @@
 
 namespace mvdb {
 
-MemTable::MemTable(size_t arena_bytes)
-    : arena_(arena_bytes),
-      table_(16, &arena_),   // start small, grows automatically
-      bytes_(0) {}
+MemTable::MemTable(size_t logical_limit,
+                   size_t arena_capacity)
+    : arena_(arena_capacity),
+      table_(16, &arena_),
+      bytes_(0),
+      logical_limit_(logical_limit) {}
+
 
 uint64_t MemTable::compute_expire_ts(uint64_t ttl_seconds) const {
     if (ttl_seconds == 0)

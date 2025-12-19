@@ -40,6 +40,15 @@ public:
     bool del(const char* key, uint32_t key_len);
 
     size_t size() const { return size_; } 
+    template <typename F>
+    void for_each(F&& fn) {
+        for (size_t i = 0; i < capacity_; ++i) {
+            const Entry& e = entries_[i];
+            if (e.state == EntryState::OCCUPIED) {
+                fn(e);
+            }
+        }
+    }
 
 private:
     void rehash();
