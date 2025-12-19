@@ -4,10 +4,15 @@
 #include <algorithm>
 #include <sstream>
 #include <ctime>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 namespace mvdb {
 
 static constexpr size_t ARENA_FACTOR = 8;
+
+/* ================= CONSTRUCTOR / DESTRUCTOR ================= */
 
 DB::DB(const std::string& dir,
        size_t memtable_bytes)
@@ -17,12 +22,18 @@ DB::DB(const std::string& dir,
       active_(new MemTable(memtable_bytes,
                            memtable_bytes * ARENA_FACTOR)),
       immutable_(nullptr),
-      next_sst_id_(0) {}
+      next_sst_id_(0) {
+
+    load_sstables();   // load existing SSTables
+    replay_wal();      // rebuild MemTable from WAL
+}
 
 DB::~DB() {
     delete active_;
     delete immutable_;
 }
+
+/* ================= WRITE PATH ================= */
 
 void DB::put(const char* key, uint32_t key_len,
              const char* value, uint32_t value_len,
@@ -41,25 +52,27 @@ void DB::del(const char* key, uint32_t key_len) {
     maybe_flush();
 }
 
+/* ================= READ PATH ================= */
+
 bool DB::get(const char* key, uint32_t key_len,
              std::string& value_out) {
 
     const char* v;
     uint32_t vlen;
 
-    // 1️⃣ Check active memtable
+    // 1️⃣ Active MemTable
     if (active_->get(key, key_len, v, vlen)) {
         value_out.assign(v, vlen);
         return true;
     }
 
-    // 2️⃣ Check immutable memtable (if exists)
+    // 2️⃣ Immutable MemTable (if flushing)
     if (immutable_ && immutable_->get(key, key_len, v, vlen)) {
         value_out.assign(v, vlen);
         return true;
     }
 
-    // 3️⃣ Check SSTables (newest → oldest)
+    // 3️⃣ SSTables (newest → oldest)
     for (auto it = sst_files_.rbegin();
          it != sst_files_.rend(); ++it) {
 
@@ -71,7 +84,7 @@ bool DB::get(const char* key, uint32_t key_len,
     return false;
 }
 
-/* ---------------- FLUSH LOGIC ---------------- */
+/* ================= FLUSH LOGIC ================= */
 
 void DB::maybe_flush() {
     if (active_->size_bytes() >= mem_limit_) {
@@ -118,6 +131,35 @@ void DB::flush_immutable() {
 
     delete immutable_;
     immutable_ = nullptr;
+}
+
+/* ================= RECOVERY ================= */
+
+void DB::load_sstables() {
+    if (!fs::exists(dir_)) return;
+
+    for (const auto& entry : fs::directory_iterator(dir_)) {
+        if (!entry.is_regular_file()) continue;
+
+        const auto& path = entry.path();
+        if (path.extension() == ".sst") {
+            sst_files_.push_back(path.string());
+
+            // extract sst id
+            std::string stem = path.stem().string(); // sst_X
+            auto pos = stem.find('_');
+            if (pos != std::string::npos) {
+                uint64_t id = std::stoull(stem.substr(pos + 1));
+                next_sst_id_ = std::max(next_sst_id_, id + 1);
+            }
+        }
+    }
+
+    std::sort(sst_files_.begin(), sst_files_.end());
+}
+
+void DB::replay_wal() {
+    wal_.replay(*active_);
 }
 
 } // namespace mvdb

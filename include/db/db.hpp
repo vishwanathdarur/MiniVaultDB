@@ -27,6 +27,9 @@ private:
     void maybe_flush();
     void freeze_memtable();
     void flush_immutable();
+    void load_sstables();
+    void replay_wal();
+
 
 private:
     std::string dir_;
