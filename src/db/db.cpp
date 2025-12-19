@@ -14,23 +14,31 @@ static constexpr size_t ARENA_FACTOR = 8;
 
 /* ================= CONSTRUCTOR / DESTRUCTOR ================= */
 
+static void ensure_dir_exists(const std::string& dir) {
+    if (!fs::exists(dir)) {
+        fs::create_directories(dir);
+    }
+}
+
 DB::DB(const std::string& dir,
        size_t memtable_bytes)
     : dir_(dir),
       mem_limit_(memtable_bytes),
-      wal_(dir + "/wal.log"),
+      wal_((ensure_dir_exists(dir), dir + "/wal.log")),
       active_(new MemTable(memtable_bytes,
                            memtable_bytes * ARENA_FACTOR)),
       immutable_(nullptr),
       next_sst_id_(0) {
 
-    load_sstables();   // load existing SSTables
-    replay_wal();      // rebuild MemTable from WAL
+    load_sstables();
+    replay_wal();
 }
+
 
 DB::~DB() {
     delete active_;
     delete immutable_;
+    wal_.close();
 }
 
 /* ================= WRITE PATH ================= */
@@ -90,8 +98,10 @@ void DB::maybe_flush() {
     if (active_->size_bytes() >= mem_limit_) {
         freeze_memtable();
         flush_immutable();
+        rotate_wal();   // ✅ ADD THIS
     }
 }
+
 
 void DB::freeze_memtable() {
     immutable_ = active_;
@@ -160,6 +170,12 @@ void DB::load_sstables() {
 
 void DB::replay_wal() {
     wal_.replay(*active_);
+}
+
+
+void DB::rotate_wal() {
+    wal_.close();                 // close current fd
+    wal_.reset(dir_ + "/wal.log"); // reopen fresh WAL
 }
 
 } // namespace mvdb

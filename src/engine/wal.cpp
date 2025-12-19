@@ -131,5 +131,20 @@ void WAL::replay(MemTable& memtable) {
         }
     }
 }
+void WAL::close() {
+    if (fd_ >= 0) {
+        ::close(fd_);
+        fd_ = -1;
+    }
+}
+
+void WAL::reset(const std::string& path) {
+    close();
+    path_ = path;
+    fd_ = ::open(path_.c_str(),
+                 O_CREAT | O_TRUNC | O_WRONLY | O_APPEND,
+                 0644);
+    assert(fd_ >= 0);
+}
 
 } // namespace mvdb

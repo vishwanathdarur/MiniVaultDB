@@ -29,7 +29,7 @@ private:
     void flush_immutable();
     void load_sstables();
     void replay_wal();
-
+    void rotate_wal();
 
 private:
     std::string dir_;

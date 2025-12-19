@@ -23,9 +23,12 @@ public:
     void append_del(const char* key, uint32_t key_len);
 
     void replay(MemTable& memtable);
+    void close();
+    void reset(const std::string& path);
 
 private:
     int fd_;
+    std::string path_;
 };
 
 } // namespace mvdb
