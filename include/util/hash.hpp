@@ -39,7 +39,7 @@ public:
 
     bool del(const char* key, uint32_t key_len);
 
-    size_t size() const { return size_; }
+    size_t size() const { return size_; } 
 
 private:
     void rehash();

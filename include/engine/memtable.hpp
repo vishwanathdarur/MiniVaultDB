@@ -31,6 +31,10 @@ public:
     size_t size_bytes() const { return bytes_; }
     size_t entry_count() const { return table_.size(); }
 
+    template <typename F>
+    void for_each(F&& fn) {
+        table_.for_each(fn);
+    }
 private:
     uint64_t compute_expire_ts(uint64_t ttl_seconds) const;
 
