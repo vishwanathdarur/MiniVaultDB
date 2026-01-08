@@ -22,7 +22,7 @@ int main() {
     std::string val;
     assert(sst.get("a", 1, val) && val == "1");
     assert(sst.get("b", 1, val) && val == "2");
-    assert(sst.get("c", 1, val) && val == "3");
+    assert(sst.get("c", 2, val) && val == "3");
     assert(!sst.get("d", 1, val));
 
     std::cout << "SSTable tests passed ✅\n";

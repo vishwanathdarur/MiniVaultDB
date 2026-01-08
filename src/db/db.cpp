@@ -98,7 +98,7 @@ void DB::maybe_flush() {
     if (active_->size_bytes() >= mem_limit_) {
         freeze_memtable();
         flush_immutable();
-        rotate_wal();   // ✅ ADD THIS
+        rotate_wal();   
     }
 }
 
@@ -178,4 +178,4 @@ void DB::rotate_wal() {
     wal_.reset(dir_ + "/wal.log"); // reopen fresh WAL
 }
 
-} // namespace mvdb
+}

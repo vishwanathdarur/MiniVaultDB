@@ -6,9 +6,9 @@
 using namespace mvdb;
 
 int main() {
-    ::system("rm -rf testdb && mkdir testdb");
+    ::system("rm -rf testdb1 && mkdir testdb");
 
-    DB db("testdb", 1024 * 1024);
+    DB db("testdb1", 1024 * 1024);
 
     db.put("a", 1, "1", 1);
     db.put("b", 1, "2", 1);

@@ -6,7 +6,6 @@ namespace mvdb {
 
 class Arena;
 
-/* Entry state for open addressing */
 enum class EntryState : uint8_t {
     EMPTY = 0,
     OCCUPIED = 1,
@@ -21,7 +20,7 @@ struct Entry {
     const char* value;
     uint32_t value_len;
 
-    uint64_t expire_ts;   // 0 = no TTL
+    uint64_t expire_ts;   
     EntryState state;
 };
 
@@ -67,4 +66,4 @@ private:
     Arena* arena_;
 };
 
-} // namespace mvdb
+} 
