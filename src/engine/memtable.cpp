@@ -28,7 +28,6 @@ bool MemTable::put(const char* key, uint32_t key_len,
                          expire_ts);
 
     if (ok) {
-        /* logical memory accounting */
         bytes_ += key_len + value_len;
     }
     return ok;
@@ -45,10 +44,9 @@ bool MemTable::del(const char* key, uint32_t key_len) {
     bool ok = table_.del(key, key_len);
 
     if (ok) {
-        /* tombstone still consumes key space logically */
         bytes_ += key_len;
     }
     return ok;
 }
 
-} // namespace mvdb
+}

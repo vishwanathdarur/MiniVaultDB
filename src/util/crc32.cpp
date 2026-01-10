@@ -63,4 +63,4 @@ uint32_t crc32(uint8_t type,
     return c ^ 0xFFFFFFFF;
 }
 
-} // namespace mvdb
+} 

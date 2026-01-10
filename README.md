@@ -26,13 +26,21 @@ The database is intentionally **single-threaded** and **without compaction** to 
   - Length-prefixed binary records with CRC32 validation
   - Replayed on startup for crash recovery
   - Rotated after flush to bound log size
+  - Format 
+    ```lua
+    +----------------+----------------+------------------+----------------+
+    | uint32 length  | uint32 crc32   | record payload  | next record... |
+    +----------------+----------------+------------------+----------------+
+    ```
+
+
 
 - **MemTable**
   - In-memory key–value store
   - Custom arena allocator for fast, linear allocations
   - Custom open-addressing hash table (no STL containers)
   - Tracks logical size to trigger flush
-  - Supports TTL and tombstones
+  - Supports TTL and tombstone
 
 - **SSTables**
   - Immutable, sorted on-disk files
@@ -52,6 +60,7 @@ The database is intentionally **single-threaded** and **without compaction** to 
 ### Write Path
 
 ```
+
 put() / del()
    ↓
 WAL (append-only)
@@ -61,6 +70,7 @@ MemTable (in-memory)
 Flush
    ↓
 SSTable (immutable, sorted)
+
 ```
 
 ### Read Path
@@ -98,7 +108,7 @@ g++ -std=c++17 \
   src/util/hash.cpp \
   src/util/arena.cpp \
   src/util/crc32.cpp \
-  tests/test_db_flush.cpp
+  tests/test_db_manuals.cpp
   -Iinclude -O2 -o db_cli
 ```
 
@@ -195,12 +205,16 @@ README.md
 
 ---
 
+## usage
+- Machine learning experiment metadata storage
+- Local feature cache for ML inference
+- Email processing pipeline (e.g., Gmail-like systems)
+- Small company internal tooling
+- Background job and task queue state
+- Edge analytics and telemetry buffering
+- analyzing forecasting weather
+
+
 ## Key Takeaway
 
 > MiniVaultDB demonstrates how modern key–value databases achieve durability and correctness using WAL, MemTables, and immutable SSTables—without relying on existing database libraries.
-
----
-
-## Author
-
-Built as a systems programming project to explore storage-engine internals and low-level database design.

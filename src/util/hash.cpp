@@ -10,7 +10,6 @@ namespace mvdb {
 
 static constexpr double MAX_LOAD = 0.7;
 
-/* FNV-1a 64-bit */
 uint64_t HashTable::hash_key(const char* data, uint32_t len) const {
     uint64_t h = 14695981039346656037ull;
     for (uint32_t i = 0; i < len; i++) {
@@ -97,7 +96,6 @@ bool HashTable::put(const char* key, uint32_t key_len,
     Entry& e = entries_[idx];
 
     if (e.state == EntryState::OCCUPIED) {
-        /* overwrite */
         e.value = (char*)arena_->alloc(value_len);
         std::memcpy((void*)e.value, value, value_len);
         e.value_len = value_len;
@@ -159,4 +157,4 @@ bool HashTable::del(const char* key, uint32_t key_len) {
     return true;
 }
 
-} // namespace mvdb
+} 

@@ -33,7 +33,6 @@ public:
     size_t size_bytes() const { return bytes_; }
     size_t entry_count() const { return table_.size(); }
 
-  // ✅ FULL TEMPLATE DEFINITION MUST BE HERE
     template <typename F>
     void for_each(F&& fn) {
         table_.for_each(fn);
@@ -49,4 +48,4 @@ private:
     size_t logical_limit_;
 };
 
-} // namespace mvdb
+}

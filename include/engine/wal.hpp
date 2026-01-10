@@ -31,4 +31,4 @@ private:
     std::string path_;
 };
 
-} // namespace mvdb
+}
