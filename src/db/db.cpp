@@ -5,9 +5,11 @@
 #include <sstream>
 #include <ctime>
 #include <filesystem>
+#include <cstring>
+#include <string>
 
 namespace fs = std::filesystem;
-
+using namespace std;
 namespace mvdb {
 
 static constexpr size_t ARENA_FACTOR = 8;
@@ -53,11 +55,19 @@ void DB::put(const char* key, uint32_t key_len,
     maybe_flush();
 }
 
+void DB::put(string &key,string &value) {
+    put(key.data(),key.size(),value.data(),value.size(),0);
+}
+
 void DB::del(const char* key, uint32_t key_len) {
     wal_.append_del(key, key_len);
     active_->del(key, key_len);
 
     maybe_flush();
+}
+
+void DB::del(string &key) {
+    del(key.data(),key.size());
 }
 
 /* ================= READ PATH ================= */
@@ -92,6 +102,13 @@ bool DB::get(const char* key, uint32_t key_len,
     return false;
 }
 
+string DB::get(string &key) {
+    string value;
+    if (get(key.data(),key.size(),value)) {
+        return value;
+    }
+    return "";
+}
 /* ================= FLUSH LOGIC ================= */
 
 void DB::maybe_flush() {

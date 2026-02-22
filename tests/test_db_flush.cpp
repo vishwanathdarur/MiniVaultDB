@@ -9,7 +9,7 @@ using namespace mvdb;
 int main() {
     ::system("rm -rf testdb && mkdir testdb");
 
-    DB db("testdb", 64); // very small memtable
+    DB db("testdb", 64); 
 
     for (int i = 0; i < 20; i++) {
         char k[8], v[8];

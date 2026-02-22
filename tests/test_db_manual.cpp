@@ -4,21 +4,24 @@
 
 using namespace mvdb;
 using namespace std;
-int main() {
-    DB db("testdb", 64*1024*1024); // small memtable to test flush too
-
+int main()
+{
+    DB db("testdb", 64 * 1024 * 1024); 
     std::string cmd;
-    while (true) {
+    while (true)
+    {
         std::cout << "> ";
         std::cin >> cmd;
 
-        if (cmd == "put") {
+        if (cmd == "put")
+        {
             std::string k, v;
             std::cin >> k >> v;
-            db.put(k.data(),k.size(),v.data(),v.size());
+            db.put(k.data(), k.size(), v.data(), v.size());
             std::cout << "OK\n";
         }
-        else if (cmd == "get") {
+        else if (cmd == "get")
+        {
             std::string k;
             std::cin >> k;
             std::string v;
@@ -27,16 +30,19 @@ int main() {
             else
                 std::cout << "(not found)\n";
         }
-        else if (cmd == "del") {
+        else if (cmd == "del")
+        {
             std::string k;
             std::cin >> k;
             db.del(k.data(), k.size());
             std::cout << "OK\n";
         }
-        else if (cmd == "exit") {
+        else if (cmd == "exit")
+        {
             break;
         }
-        else {
+        else
+        {
             std::cout << "Commands: put <k> <v>, get <k>, del <k>, exit\n";
         }
     }

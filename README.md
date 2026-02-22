@@ -97,19 +97,19 @@ After a crash or restart, the database restores its state using:
 
 ## Build
 
-Example build command (project root):
+Example build command (project root)
 
-```bash
-g++ -std=c++17 \
-  src/db/db.cpp \
-  src/engine/wal.cpp \
-  src/engine/memtable.cpp \
-  src/engine/sstable.cpp \
-  src/util/hash.cpp \
-  src/util/arena.cpp \
-  src/util/crc32.cpp \
-  tests/test_db_manuals.cpp
-  -Iinclude -O2 -o db_cli
+ - just run a make
+
+ - commands
+
+```
+  make // create a object file
+  make test TEST=yourmainfilepath
+```
+- to clearn
+```
+  make clean
 ```
 
 ---
@@ -117,15 +117,13 @@ g++ -std=c++17 \
 ## Usage (Example)
 
 ```
-> put key1 value1
+> put key1 value1 
 OK
 > get key1
 value1
 > del key1
 OK
 ```
-
-Data persists across restarts due to WAL and recovery logic.
 
 ---
 
@@ -184,6 +182,12 @@ README.md
 
 ---
 
+
+## Peformance 
+
+![alt text](image.png)
+
+
 ## Design Goals
 
 - Prioritize correctness and durability
@@ -193,6 +197,8 @@ README.md
 - Provide a clean foundation for future optimizations
 
 ---
+
+
 
 ## Future Work
 

@@ -1,10 +1,9 @@
 #pragma once
 #include <string>
 #include <vector>
-
 #include "engine/memtable.hpp"
 #include "engine/wal.hpp"
-
+using namespace std;
 namespace mvdb {
 
 class DB {
@@ -22,6 +21,10 @@ public:
              std::string& value_out);
 
     void del(const char* key, uint32_t key_len);
+
+    void put(string &key,string &value);
+    std::string get(string &key);
+    void del(string &key);
 
 private:
     void maybe_flush();
